@@ -5,6 +5,8 @@
     <style>
   body {
     margin: 0;
+    background-image: url('res/stoneFloor.avif');
+
   }
 </style>
 
@@ -78,10 +80,9 @@
                 }
 
                 if (Input.keys.SPACE) {
-                    cube.velocity.y += 0.01             
-                } else {
-                    // cube.velocity.y = 0
-                }
+                    Input.keys.SPACE = !Input.keys.SPACE  // Reset SPACE key after jump            
+                    cube.velocity.y += 0.125  
+                }  
             }
                
         }
@@ -97,9 +98,15 @@
             0.1,
             1000
         )
-        camera.position.set (0,8,16)
+        camera.position.set (10,10,14)
         
-        const renderer = new THREE.WebGLRenderer()
+        const renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true,
+            powerPreference: 'high-performance',
+            logarithmicDepthBuffer: true,
+
+        })
         renderer.setSize(window.innerWidth, window.innerHeight)
         renderer.shadowMap.enabled = true
         
@@ -107,12 +114,12 @@
         
         const light = new THREE.PointLight(0xffffff, 1)
 
-        light.position.x = 3
-        light.position.y = 3
-        light.position.z = 2
+        light.position.x = 0
+        light.position.y = 10
+        light.position.z = 0
         light.castShadow = true
 
-        const AmbientLight = new THREE.AmbientLight(0xffffff, 0.5)
+        const AmbientLight = new THREE.AmbientLight(0xffffff, 0.3)
         scene.add(light)
         scene.add(AmbientLight)
         
@@ -123,7 +130,8 @@
             constructor({
                 width, height, depth, color=0x00ff00, map = null, 
                 velocity = {x: 0, y: 0, z: 0},
-                position = {x: 0, y: 0, z: 0}
+                position = {x: 0, y: 0, z: 0},
+                zAcceleration
             }) {
 
                 super (
@@ -149,6 +157,8 @@
                 this.velocity = velocity
                 this.gravity = -0.005
 
+                this.zAcceleration = zAcceleration || 0
+
             }
 
             updateSides () {
@@ -165,7 +175,7 @@
             update(ground) {
                 this.updateSides()
 
-                this.velocity.z += 0.001
+                this.velocity.z += this.zAcceleration
 
                 this.position.x += this.velocity.x
                 this.position.z += this.velocity.z
@@ -212,11 +222,11 @@
         }
 
         const textureLoader = new THREE.TextureLoader();
-        const map = textureLoader.load(texture.stone);
+        const map = textureLoader.load(texture.grass);
         map.wrapS = THREE.RepeatWrapping;
         map.wrapT = THREE.RepeatWrapping;
         const repeat = 5
-        map.repeat.set(repeat, repeat*3);
+        map.repeat.set(repeat, repeat);
         
 
         const ground = new Box({
@@ -231,21 +241,24 @@
         ground.receiveShadow = true
         scene.add(ground)
                   
-        
-        const enemy = new Box({
-            width  : 1, 
-            height : 1, 
-            depth  : 1,
-            color  : 0xff00ff,
-            velocity: {x: 0, y: -0.01, z: 0.05},
-            position: {x: Math.random() * 10 - 5, y: 0, z: -8}
-        })
-        enemy.castShadow = true
-        scene.add(enemy)
-        
-        const enemies = [enemy]
-        
-        
+        function spawnEnemy() {
+            const enemy = new Box({
+                width  : 1, 
+                height : 1, 
+                depth  : 1,
+                color  : 0xf0d0f0,
+                map    : textureLoader.load('res/stoneFloor.avif'),
+                velocity: {x: 0, y: -0.01, z: 0.05},
+                position: {x: Math.random() * 10 - 5, y: 0, z: -8},
+                zAcceleration: 0.001
+            })
+            enemy.castShadow = true
+            scene.add(enemy)
+            return enemy
+        }
+
+        const enemies = []
+
         const textCanvas = document.createElement('canvas')
         textCanvas.style.position = 'absolute'
         textCanvas.style.top = '0'
@@ -259,6 +272,7 @@
         document.body.append (textCanvas)
 
         let loop = 0;
+        let frames = 0;
 
         function animate() {
             ctx.clearRect(0, 0, textCanvas.width, textCanvas.height)
@@ -279,12 +293,26 @@
                     cancelAnimationFrame(loop)
                 }
             })
+
+            if (cube.position.y < -10) {
+                ctx.textAlign='center'
+                ctx.fillStyle= "red"
+                ctx.font = "bold 80px Arial"
+                ctx.fillText ("GAME OVER", textCanvas.width / 2, textCanvas.height / 2)
+                cancelAnimationFrame(loop)
+            }
             
+            frames++
+            if (frames % 20 === 0) {
+                enemies.push(spawnEnemy())
+            }
+
             try {
                 ctx.fillStyle= "white"
                 ctx.font = "30px Arial"
                 ctx.textAlign='left'
-                ctx.fillText(`cube : {x: ${cube.position.x.toFixed(2)}, y: ${cube.position.y.toFixed(2)}, z: ${cube.position.z.toFixed(2)}}`, 30, 30)
+                ctx.fillText(`camera : {x: ${camera.position.x.toFixed(2)}, y: ${camera.position.y.toFixed(2)}, z: ${camera.position.z.toFixed(2)}}`, 30, 30)
+                ctx.fillText(`cube : {x: ${cube.position.x.toFixed(2)}, y: ${cube.position.y.toFixed(2)}, z: ${cube.position.z.toFixed(2)}}`, 30, 60)
             } catch (error) {
                 console.log(error)
             }
