@@ -82,7 +82,7 @@ export class Box extends THREE.Mesh {
         return (new Box({
             width: 0.25, 
             height: 0.25, 
-            depth: 0.25, 
+            depth: 0.75, 
             color,
             position: {x: this.position.x, y: this.position.y, z: this.position.z},
             velocity: {x: 0, y: 0, z: -0.25 * dir}

@@ -14,18 +14,25 @@
     </script>
     <script type="module" src="js/main.js"></script>
     <style>
-        body {
-            margin: 0;
-            background-image: url('res/space4.gif');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position: center;
-            overflow: hidden;
-        }
+        @import url('css/style.css');
     </style>   
 </head>
 <body>
-    
+    <div id="controller">
+            <section class="circle" id="analog">
+                <button id="joystick">&nbsp;</button>
+            </section>
+            <section id="options">
+                <button key="Enter">&nbsp;</button>
+                <div>START</div>
+            </section>
+            <section class="circle" id="triggers">
+                <button key="KeyS">S</button>
+                <!-- <button key="KeyD">D</button>
+                <button key="KeyX">X</button>
+                <button key="KeyC">C</button>  -->
+            </section>
+        </div>
+    </div>
 </body>
 </html>
