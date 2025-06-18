@@ -5,8 +5,9 @@
     <style>
   body {
     margin: 0;
-    background-image: url('res/stoneFloor.avif');
-
+    background-image: url('res/space.gif');
+    background-size: cover;
+    background-position: center;
   }
 </style>
 
@@ -98,7 +99,8 @@
             0.1,
             1000
         )
-        camera.position.set (10,10,14)
+        camera.position.set (0,8,16)
+        // camera.position.set (10,10,14)
         
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -131,12 +133,14 @@
                 width, height, depth, color=0x00ff00, map = null, 
                 velocity = {x: 0, y: 0, z: 0},
                 position = {x: 0, y: 0, z: 0},
-                zAcceleration
+                zAcceleration,
+                transparent = false,
+                opacity = 1
             }) {
 
                 super (
                     new THREE.BoxGeometry(width, height, depth), 
-                    new THREE.MeshStandardMaterial({ color, map })
+                    new THREE.MeshStandardMaterial({ color, map, transparent, opacity })
                 )
                 this.height = height
                 this.width  = width
@@ -233,9 +237,11 @@
             width  : 10, 
             height : 0.25, 
             depth  : 20,
-            map ,
+            // map ,
             color: 0xf0f0f0,
-            position: {x: 0, y: -2, z: 0}
+            position: {x: 0, y: -2, z: 0},
+            transparent: true,
+            opacity: 0.01
         })
             
         ground.receiveShadow = true
@@ -311,8 +317,8 @@
                 ctx.fillStyle= "white"
                 ctx.font = "30px Arial"
                 ctx.textAlign='left'
-                ctx.fillText(`camera : {x: ${camera.position.x.toFixed(2)}, y: ${camera.position.y.toFixed(2)}, z: ${camera.position.z.toFixed(2)}}`, 30, 30)
-                ctx.fillText(`cube : {x: ${cube.position.x.toFixed(2)}, y: ${cube.position.y.toFixed(2)}, z: ${cube.position.z.toFixed(2)}}`, 30, 60)
+                // ctx.fillText(`camera : {x: ${camera.position.x.toFixed(2)}, y: ${camera.position.y.toFixed(2)}, z: ${camera.position.z.toFixed(2)}}`, 30, 30)
+                // ctx.fillText(`cube : {x: ${cube.position.x.toFixed(2)}, y: ${cube.position.y.toFixed(2)}, z: ${cube.position.z.toFixed(2)}}`, 30, 60)
             } catch (error) {
                 console.log(error)
             }
