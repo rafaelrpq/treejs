@@ -192,6 +192,7 @@ section#triggers {
     }
     #triggers button:nth-child(4) {
         background: rgba(255,0,0,.15);
+    }
 }
 
 @media only screen and (orientation: landscape) {
