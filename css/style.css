@@ -18,10 +18,10 @@ body {
 
 div#controller {
     
-    width: fill-available;
+    width: -webkit-fill-available;
     display:none;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     z-index: 9999;
 }
 
