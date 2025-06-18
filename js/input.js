@@ -99,12 +99,12 @@ joystick.addEventListener ('touchend', e => {
 document.addEventListener ('touchstart', input.listener, {passive: false});
 document.addEventListener ('touchend', input.listener, {passive: false});
 
-document.querySelector ('[key=Enter]').addEventListener ('touchstart', (e) => {
-    pause ()
-}, {'passive' : true});
+// document.querySelector ('[key=Enter]').addEventListener ('touchstart', (e) => {
+//     state = State.RUNNING
+// }, {'passive' : true});
 
-document.addEventListener ('keydown', e => {
-    if (e.key === 'Enter') pause ();
-}, {'passive' : false});
+// document.addEventListener ('keydown', e => {
+//     if (e.key === 'Enter') pause ();
+// }, {'passive' : false});
 
 

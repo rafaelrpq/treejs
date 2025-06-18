@@ -92,6 +92,12 @@ document.addEventListener ('touchend',   input.touchListener)
 
 const shots = []
 let shotsMax = 10
+const enemies = []
+let frames = 0, loop = 0
+
+function init () {
+    location.reload()
+}
 
 // function handler (cube) {
 //     if (Input.keys.UP) {
@@ -165,17 +171,16 @@ function handler () {
     box.velocity.z = input.axis.y / factor
 }
 
-const enemies = []
-let frames = 0, loop = 0
+
 
 function shotMeter () {
     ctx.strokeStyle = 'white'
     ctx.lineWidth = 2
-    const meterWidth = textCanvas.width/2 - 10
-    ctx.strokeRect(textCanvas.width/2, 10, meterWidth, 20 )
+    const meterWidth = 150
+    ctx.strokeRect(textCanvas.width - meterWidth - 10, 10, meterWidth, 20 )
     ctx.fillStyle = 'rgba(255,0,0,0.7)'
     let meter = (meterWidth - 4) * shots.length / shotsMax 
-    ctx.fillRect(textCanvas.width/2 + 2, 10 +2, meter , 20 - 4 )    
+    ctx.fillRect(textCanvas.width - meterWidth - 8, 10 +2, meter , 20 - 4 )    
 }
 
 function debug(){
@@ -185,15 +190,63 @@ function debug(){
     // ctx.fillText(`box: ${box.position.x.toFixed(2)}, ${box.position.y.toFixed(2)}, ${box.position.z.toFixed(2)}`, 10, 60)
 }
 
-function animate() {
-    ctx.clearRect(0, 0, textCanvas.width, textCanvas.height)
 
-    
+function gameover() {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = "red";
+    ctx.font = "bold 60px Arial";
+    ctx.fillText("GAME OVER", textCanvas.width / 2, textCanvas.height / 2);
+    cancelAnimationFrame(loop);
+    state = State.GAMEOVER
+}
+
+const State = {
+    INITIALIZING: -1,
+    GAMEOVER: 0,
+    RUNNING : 1,
+    PAUSED : 2
+}
+
+let state = State.INITIALIZING;
+
+document.querySelector ('[key=Enter]').addEventListener ('touchstart', (e) => {
+    switch (state) {
+        case State.GAMEOVER:
+            init()
+            break;
+        case State.INITIALIZING:
+            animate()
+            state = State.RUNNING
+            break;
+        case State.RUNNING:
+            ctx.save()
+            state = State.PAUSED
+            ctx.textAlign = 'center';
+            ctx.fillStyle = "white";
+            ctx.font = "bold 60px Arial";
+            ctx.fillText("PAUSED", textCanvas.width / 2, textCanvas.height / 2);
+            ctx.restore()
+            cancelAnimationFrame (loop)
+            break;
+        case State.PAUSED:
+            state = State.RUNNING
+            animate()
+            break;
+    }
+
+}, {'passive' : true});
+
+document.addEventListener ('keydown', e => {
+    if (e.key === 'Enter') pause ();
+}, {'passive' : false});
+
+
+function animate() {
+    ctx.clearRect(0, 0, textCanvas.width, textCanvas.height) 
 
     debug()
     shotMeter()
     
-
     loop = requestAnimationFrame(animate)
     renderer.render(scene, camera)
     
@@ -219,11 +272,7 @@ function animate() {
         enemy.rotation.y += 0.05
         enemy.update(ground)
         if (boxCollision(enemy, box)) {
-            ctx.textAlign='center'
-            ctx.fillStyle= "red"
-            ctx.font = "bold 60px Arial"
-            ctx.fillText ("GAME OVER", textCanvas.width / 2, textCanvas.height / 2)
-             cancelAnimationFrame(loop)
+            gameover ()
         }
 
         if (enemy.position.z > 14) {
@@ -247,6 +296,5 @@ function animate() {
         enemies.push(enemy)
         scene.add(enemy) 
     }    
-}     
+}
 
-animate()
