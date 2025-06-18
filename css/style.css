@@ -16,6 +16,10 @@ body {
     align-items: center
 }
 
+canvas {
+    image-rendering: pixelated;
+}
+
 div#controller {
     
     width: -webkit-fill-available;
@@ -176,10 +180,22 @@ section#triggers {
 
         display: block;
     }
+
+    #triggers button:nth-child(1) {
+        background: rgba(0,180,0,.15);
+    }
+    #triggers button:nth-child(2) {
+        background: rgba(50,50,255,.15);
+    }
+    #triggers button:nth-child(3) {
+        background: rgba(250,190,0,.15);
+    }
+    #triggers button:nth-child(4) {
+        background: rgba(255,0,0,.15);
 }
 
-
 @media only screen and (orientation: landscape) {
+
 
     #triggers button:nth-child(1) {
         background: rgba(0,180,0,.15);
