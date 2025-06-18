@@ -11,7 +11,7 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 )
-camera.position.set (0,8,16)
+camera.position.set (0,16,16)
 
 const renderer = new THREE.WebGLRenderer({
     alpha: true,
@@ -44,7 +44,7 @@ document.body.appendChild(renderer.domElement)
 const textCanvas = document.createElement('canvas')
 textCanvas.style.position = 'absolute'
 textCanvas.style.top = '0'
-textCanvas.style.pointerEvents = 'none'
+// textCanvas.style.pointerEvents = 'none'
 
 textCanvas.width = window.innerWidth
 textCanvas.height = window.innerHeight
@@ -59,7 +59,7 @@ const ground = new Box({
     depth  : 100,
     // map ,
     color: 0xf0f0f0,
-    position: {x: 0, y: -2, z: -8},
+    position: {x: 0, y: -2, z: -40},
     transparent: true,
     opacity: .01
 })
@@ -82,8 +82,8 @@ scene.add(ground)
 addEventListener('keydown', Input.listener)
 addEventListener('keyup', Input.listener)
 
-const list = []
-let shooting = false
+const shots = []
+let shotsMax = 10
 
 function handler (cube) {
     if (Input.keys.UP) {
@@ -111,12 +111,12 @@ function handler (cube) {
     }
 
     if (Input.keys.SPACE) {
-        
-        if (list.length < 100) {
+        Input.keys.SPACE = false
+        if (shots.length < shotsMax) {
             const shot = cube.shot ();
-            list.push(shot)
+            shots.push(shot)
             scene.add(shot)
-            
+            // return; 
         }
     }  
 }
@@ -124,20 +124,42 @@ Input.handler = handler;
 
 const enemies = []
 let frames = 0, loop = 0
+
+function shotMeter () {
+    ctx.strokeStyle = 'white'
+    ctx.lineWidth = 2
+    const meterWidth = textCanvas.width/2 - 10
+    ctx.strokeRect(textCanvas.width/2, 10, meterWidth, 20 )
+    ctx.fillStyle = 'rgba(255,0,0,0.7)'
+    let meter = (meterWidth - 4) * shots.length / shotsMax 
+    ctx.fillRect(textCanvas.width/2 + 2, 10 +2, meter , 20 - 4 )    
+}
+
 function animate() {
     ctx.clearRect(0, 0, textCanvas.width, textCanvas.height)
+
+    ctx.fillStyle = 'white'
+    ctx.font = '24px Arial'
+    ctx.fillText(`FPS: ${Math.round(renderer.info.render.frame / (performance.now() / 1000))}`, 10, 30)
+
+    
+    shotMeter()
+    
+
     loop = requestAnimationFrame(animate)
     renderer.render(scene, camera)
     
     box.update(ground)
+    box.rotation.x += 0.05
+    box.rotation.y += 0.05
 
     Input.handler(box)
 
-    list.forEach((item, index) => {
+    shots.forEach((item, index) => {
         item.update(ground)
-        if (item.position.z < -200) {
+        if (item.position.z < -50) {
             scene.remove(item)
-            list.splice(index, 1)
+            shots.splice(index, 1)
         }
     }) 
 
@@ -158,12 +180,12 @@ function animate() {
             enemies.splice(i, 1)
         }
 
-        list.forEach((item, index) => {
+        shots.forEach((item, index) => {
             if (boxCollision(enemy, item)) {
                 scene.remove(enemy)
                 enemies.splice(i, 1)
                 scene.remove(item)
-                list.splice(index, 1)
+                shots.splice(index, 1)
             }
         })         
     })
@@ -173,16 +195,7 @@ function animate() {
         const enemy = spawnEnemy()  
         enemies.push(enemy)
         scene.add(enemy) 
-    }
-
-    controls.update()
-
-    ctx.fillStyle = 'white'
-    ctx.font = '24px Arial'
-    // ctx.fillText('Hello, Three.js!', 10, 30)
-    // ctx.fillText(`FPS: ${Math.round(renderer.info.render.frame / (performance.now() / 1000))}`, 10, 60)
-    // ctx.fillText(`Boxes: ${list.length}`, 10, 90)
-    // ctx.fillText(`Box Position: (${box.position.x.toFixed(2)}, ${box.position.y.toFixed(2)}, ${box.position.z.toFixed(2)})`, 10, 120)
+    }    
 }     
 
 animate()

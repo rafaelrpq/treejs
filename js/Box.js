@@ -73,16 +73,16 @@ export class Box extends THREE.Mesh {
 
     shot(enemy) {
         let dir = 1
-        let color = 0xff0000
+        let color = 0xffff00
         if (enemy) {
             dir = -1
             color = 0x00ff00
         }
 
         return (new Box({
-            width: 0.1, 
-            height: 0.1, 
-            depth: 0.1, 
+            width: 0.25, 
+            height: 0.25, 
+            depth: 0.25, 
             color,
             position: {x: this.position.x, y: this.position.y, z: this.position.z},
             velocity: {x: 0, y: 0, z: -0.25 * dir}

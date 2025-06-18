@@ -23,7 +23,7 @@ export const Input = {
     
     listener: (e) => {
         const state = e.type === 'keydown' ? true : false
-        console.log(e.code) 
+        // console.log(e.code) 
         switch (e.code) {
             case 'KeyW':
                 Input.keys.UP = state
@@ -76,8 +76,8 @@ export function spawnEnemy() {
         depth  : 1,
         color  : 0xfd0000,
         velocity: {x: 0, y: -0.01, z: 0.05},
-        position: {x: Math.random() * 12 - 6, y: 0, z: -300},
-        zAcceleration: 0.0001
+        position: {x: Math.random() * 8 - 4, y: 0, z: -80},
+        zAcceleration: 0.001
     })
     enemy.castShadow = true
     return enemy
