@@ -240,12 +240,30 @@ document.addEventListener ('keydown', e => {
     if (e.key === 'Enter') pause ();
 }, {'passive' : false});
 
+const img = new Image();
+img.src = 'res/logo2.png'
+const wcenter = textCanvas.width / 2
+const hcenter = textCanvas.height / 2
+
+
+img.onload = () => {
+    ctx.save()
+    ctx.clearRect(0, 0, textCanvas.width, textCanvas.height) 
+    ctx.drawImage (img, wcenter - img.width / 2, hcenter - img.height / 2, img.width, img.height)
+    ctx.textAlign = 'center';
+    ctx.fillStyle = "white";
+    ctx.font = "bold 10px Arial";
+    ctx.fillText ("- APERTE START -", wcenter,  hcenter - img.height / 2 + 100)
+    ctx.restore()
+}
 
 function animate() {
     ctx.clearRect(0, 0, textCanvas.width, textCanvas.height) 
 
+    ctx.save()
     debug()
     shotMeter()
+    ctx.restore()
     
     loop = requestAnimationFrame(animate)
     renderer.render(scene, camera)
