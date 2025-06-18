@@ -54,6 +54,8 @@ textCanvas.style.top = '0'
 textCanvas.width = window.innerWidth
 textCanvas.height = window.innerHeight
 
+textCanvas.imageSmoothingEnabled = false
+
 const ctx = textCanvas.getContext('2d')
 
 document.body.append (textCanvas)
