@@ -77,7 +77,7 @@ const box = new Box({
     width : 1,
     height: 1,
     depth : 1,
-    color : 0x0000ff,
+    color : 0x5555ff,
     velocity: {x: 0, y: -0.01, z: 0},
     position: {x: 0, y: 0, z: 10}
 })
@@ -271,8 +271,8 @@ function animate() {
     renderer.render(scene, camera)
     
     box.update(ground)
-    box.rotation.x += 0.05
-    box.rotation.y += 0.05
+    // box.rotation.x += 0.05
+    // box.rotation.y += 0.05
 
     // Input.handler(box)
     handler()
