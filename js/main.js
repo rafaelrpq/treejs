@@ -92,9 +92,9 @@ scene.add(ground)
 document.addEventListener('touchstart', input.touchListener, { 'passive': false })
 document.addEventListener('touchend', input.touchListener)
 
-const shots = []
+let shots = []
 let shotsMax = 10
-const enemies = []
+let enemies = []
 let frames = 0, loop = 0
 
 function init() {
@@ -277,38 +277,47 @@ function animate() {
     // Input.handler(box)
     handler()
 
-
-
-    shots.forEach((item, index) => {
-        item.update(ground)
+    // Atualiza e filtra os tiros que saíram da tela
+    shots.forEach(item => item.update(ground));
+    shots = shots.filter(item => {
         if (item.position.z < -50) {
-            scene.remove(item)
-            shots.splice(index, 1)
+            scene.remove(item); // Remove da cena
+            return false;       // Retorna false para que o filter remova do array
         }
-    })
+        return true;
+    });
 
-    enemies.forEach((enemy, i) => {
-        enemy.rotation.x += 0.05
-        enemy.rotation.y += 0.05
-        enemy.update(ground)
+    // Listas para marcar itens a serem removidos após a iteração
+    const enemiesToRemove = new Set();
+    const shotsToRemove = new Set();
+
+    // Atualiza inimigos e verifica colisões
+    enemies.forEach(enemy => {
+        enemy.rotation.x += 0.05;
+        enemy.rotation.y += 0.05;
+        enemy.update(ground);
+
         if (boxCollision(enemy, box)) {
-            gameover()
+            gameover();
         }
-
         if (enemy.position.z > 14) {
-            scene.remove(enemy)
-            enemies.splice(i, 1)
+            enemiesToRemove.add(enemy);
         }
 
-        shots.forEach((item, index) => {
-            if (boxCollision(enemy, item)) {
-                scene.remove(enemy)
-                enemies.splice(i, 1)
-                scene.remove(item)
-                shots.splice(index, 1)
+        // Verifica colisão com os tiros
+        shots.forEach(shot => {
+            if (boxCollision(enemy, shot)) {
+                enemiesToRemove.add(enemy);
+                shotsToRemove.add(shot);
             }
-        })
-    })
+        });
+    });
+
+    // Remove os inimigos e tiros marcados de uma só vez, de forma segura
+    enemies = enemies.filter(enemy => !enemiesToRemove.has(enemy));
+    shots = shots.filter(shot => !shotsToRemove.has(shot));
+    enemiesToRemove.forEach(enemy => scene.remove(enemy));
+    shotsToRemove.forEach(shot => scene.remove(shot));
 
     frames++
     if (frames % 60 === 0) {
@@ -317,4 +326,3 @@ function animate() {
         scene.add(enemy)
     }
 }
-
