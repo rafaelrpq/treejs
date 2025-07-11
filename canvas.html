@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<body>
+    <form method="post">
+        <input type="file" id="fileInput" accept="image/png">
+        <button>Create</button>
+    </form>
+    <canvas></canvas>
+
+    <script >
+        const canvas = document.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const fileInput = document.getElementById('fileInput');
+
+        const form = document.querySelector('form');
+
+        const pixels = []
+
+        function blackToTransparent(img) {
+            canvas.width = (img.width) ;
+            canvas.height = (img.height) ;
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            for (let i = 0; i < img.width; i++) {
+                for (let j = 0; j < img.height; j++) {
+                    const pixel =  (ctx.getImageData(i, j, 1, 1));
+
+                    if (pixel.data[0] === 0 && pixel.data[1] === 0 && pixel.data[2] === 0 && pixel.data[3] != 0) {
+                        pixel.data[3] = 0;
+                    }
+                    ctx.putImageData(pixel, i, j)
+                }
+            }
+            
+            return canvas.toDataURL('image/png');
+        }
+
+        function resizePixel (img) {
+
+            canvas.width = (img.width * 5) ;
+            canvas.height = (img.height * 5) ;
+            ctx.imageSmoothingEnabled = false;
+
+            for (let i = 0; i < img.width; i++) {
+                for (let j = 0; j < img.height; j++) {
+                    ctx.drawImage(img, i, j, 1, 1, (i * 4) + i , (j * 4) + j, 4, 4);
+                }
+            }
+
+            return;
+        }
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a PNG file.');
+                return;
+            }
+
+            canvas.style.backgroundColor = 'yellow'; // Set canvas background to transparent
+            const reader = new FileReader();
+            const img = new Image();
+            
+            reader.onload = function(e) {
+                img.onload = function() {
+                    img.src = blackToTransparent(img);
+                    resizePixel(img);
+                };
+                img.src = e.target.result;
+            }
+
+            reader.readAsDataURL(file);            
+            
+        });
+
+    </script>
+</body>
+</html>
